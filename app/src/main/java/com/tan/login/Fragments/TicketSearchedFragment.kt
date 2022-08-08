@@ -29,10 +29,14 @@ class TicketSearchedFragment : Fragment() {
     private val SAVE_KEY_TIME = "SAVE BUNDLE TIME"
     private val SAVE_KEY_GO = "SAVE BUNDLE_GO"
     private val SAVE_KEY_TO = "SAVE BUNDLE_TO"
+    private val SAVE_IS_ROUND_TRIP = "SAVE ROUND TRIP"
+    private val SAVE_KEY_TIME_TO = "SAVE BUNDLE TIME TO"
 
     private var placeGo = ""
     private var placeTo = ""
     private var time = ""
+    private var timeTo = ""
+    private var isRoundTrip = false
 
 
     private val flightRepo = FlightRepo()
@@ -90,6 +94,10 @@ class TicketSearchedFragment : Fragment() {
             bundle.putString(SAVE_KEY_TO,placeTo)
             bundle.putString(SAVE_KEY_TIME,time)
             bundle.putSerializable(REQUEST_SEARCH_TICKET,requestBundle)
+            if (isRoundTrip){
+                bundle.putString(SAVE_KEY_TIME_TO,timeTo)
+                bundle.putBoolean(SAVE_IS_ROUND_TRIP,isRoundTrip)
+            }
 
             var flightBookingFragment = FlightBookingFragment()
             flightBookingFragment.arguments = bundle
@@ -133,6 +141,10 @@ class TicketSearchedFragment : Fragment() {
             placeGo = bundle.getString(SAVE_KEY_GO).toString()
             placeTo = bundle.getString(SAVE_KEY_TO).toString()
             time = bundle.getString(SAVE_KEY_TIME).toString()
+            if (bundle.getBoolean(SAVE_IS_ROUND_TRIP)!= null){
+                isRoundTrip = bundle.getBoolean(SAVE_IS_ROUND_TRIP)
+                timeTo = bundle.getString(SAVE_KEY_TIME_TO).toString()
+            }
         }
     }
 

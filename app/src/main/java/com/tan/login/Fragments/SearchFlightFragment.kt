@@ -17,14 +17,23 @@ import com.tan.login.Interfaces.IClickFlight
 import com.tan.login.Models.FlightPlace.RegionDatum
 import com.tan.login.Models.FlightPlace.ResponseFlight
 import com.tan.login.Models.FlightPlace.SelectPeople
+import com.tan.login.Models.FlightTicket.Resquest.RequestSearchFlight
 import com.tan.login.R
 import com.tan.login.Repositories.FlightRepo
+import kotlinx.android.synthetic.main.fragment_flight_booking.view.*
 import kotlinx.android.synthetic.main.fragment_search_flight.view.*
 import kotlinx.coroutines.launch
 import java.text.Normalizer
 import java.util.regex.Pattern
 
 class SearchFlightFragment : Fragment() {
+
+    private val SAVE_KEY_TIME = "SAVE BUNDLE TIME"
+    private val SAVE_KEY_TIME_TO = "SAVE BUNDLE TIME TO"
+    private val SAVE_KEY_GO = "SAVE BUNDLE_GO"
+    private val SAVE_KEY_TO = "SAVE BUNDLE_TO"
+    private val SAVE_IS_ROUND_TRIP = "SAVE ROUND TRIP"
+    private val REQUEST_SEARCH_TICKET = "REQUEST_TICKET"
 
     private var dataFlight: MutableList<Any> = mutableListOf()
     private var responseFlight: ResponseFlight? = null
@@ -37,6 +46,13 @@ class SearchFlightFragment : Fragment() {
     private val SELECT_KEY_PLACE = "PLACE SELECTED"
     private var placeGo: RegionDatum? = null
     private var placeTo: RegionDatum? = null
+    private var placeGoString =""
+    private var placeToString =""
+    private var timeGo = ""
+    private var timeTo = ""
+    private var isRoundTrip = false
+    private var requestSearchFlight: RequestSearchFlight? = null
+    private var requestBundle: RequestSearchFlight? = null
 
 
     var iClickFlight = object : IClickFlight {
@@ -65,6 +81,16 @@ class SearchFlightFragment : Fragment() {
 //        }
         bundle.putSerializable(SELECT_PLACE_1, placeGo)
         bundle.putSerializable(SELECT_PLACE_2, placeTo)
+
+        bundle.putString(SAVE_KEY_GO,placeGoString)
+        bundle.putString(SAVE_KEY_TO,placeToString)
+        bundle.putString(SAVE_KEY_TIME,timeGo)
+        bundle.putSerializable(REQUEST_SEARCH_TICKET,requestBundle)
+        if (isRoundTrip){
+            bundle.putString(SAVE_KEY_TIME_TO,timeTo)
+            bundle.putBoolean(SAVE_IS_ROUND_TRIP,isRoundTrip)
+        }
+
         var flightBookingFragment = FlightBookingFragment()
         flightBookingFragment.arguments = bundle
         requireActivity().supportFragmentManager.beginTransaction()
@@ -79,6 +105,9 @@ class SearchFlightFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
+
+    private fun getDataBundle() {
         var bundle = this.arguments
         if (bundle != null) {
             if (bundle.getInt(SELECT_KEY_TO_PASS) != null) {
@@ -90,6 +119,22 @@ class SearchFlightFragment : Fragment() {
             }
             if (bundle.getSerializable(SELECT_PLACE_2) != null) {
                 placeTo = bundle.getSerializable(SELECT_PLACE_2) as RegionDatum
+            }
+            if (bundle.getSerializable(REQUEST_SEARCH_TICKET) != null) {
+                requestBundle =
+                    bundle.getSerializable(REQUEST_SEARCH_TICKET) as RequestSearchFlight?
+            }
+            requestSearchFlight = bundle.getSerializable(REQUEST_SEARCH_TICKET) as RequestSearchFlight?
+            if (bundle.getString(SAVE_KEY_GO)!=null) {
+                placeGoString = bundle.getString(SAVE_KEY_GO).toString()
+                placeToString = bundle.getString(SAVE_KEY_TO).toString()
+                Log.e("Bundle Search",placeToString)
+            }
+
+            timeGo = bundle.getString(SAVE_KEY_TIME).toString()
+            if (bundle.getBoolean(SAVE_IS_ROUND_TRIP)!= null){
+                isRoundTrip = bundle.getBoolean(SAVE_IS_ROUND_TRIP)
+                timeTo = bundle.getString(SAVE_KEY_TIME_TO).toString()
             }
 
         }
@@ -113,6 +158,7 @@ class SearchFlightFragment : Fragment() {
     ): View? {
         var view = inflater.inflate(R.layout.fragment_search_flight, container, false)
         setUpToRecyclerView(view)
+        getDataBundle()
         clickEvent(view)
         return view
     }
@@ -143,7 +189,17 @@ class SearchFlightFragment : Fragment() {
         view.imv_icon_back.setOnClickListener {
             if (view.edt_search_flight.isFocused)
                 hideKeyboard()
+            var bundle = Bundle()
+            bundle.putString(SAVE_KEY_GO,placeGoString)
+            bundle.putString(SAVE_KEY_TO,placeToString)
+            bundle.putString(SAVE_KEY_TIME,timeGo)
+            bundle.putSerializable(REQUEST_SEARCH_TICKET,requestBundle)
+            if (isRoundTrip){
+                bundle.putString(SAVE_KEY_TIME_TO,timeTo)
+                bundle.putBoolean(SAVE_IS_ROUND_TRIP,isRoundTrip)
+            }
             var flightBookingFragment = FlightBookingFragment()
+            flightBookingFragment.arguments = bundle
             requireActivity().supportFragmentManager.beginTransaction()
                 .setCustomAnimations(R.anim.anim_slide_in_left, R.anim.anim_slide_out_right)
                 .replace(R.id.root_container, flightBookingFragment).commit()

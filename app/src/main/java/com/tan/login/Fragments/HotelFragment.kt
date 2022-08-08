@@ -2,7 +2,6 @@ package com.tan.login.Fragments
 
 import android.Manifest
 import android.app.Dialog
-import android.content.Context
 import android.content.pm.PackageManager
 import android.location.*
 import android.os.Build
@@ -16,12 +15,15 @@ import androidx.core.app.ActivityCompat
 import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.datepicker.*
+import com.tan.login.FormatString.CurTime
 import com.tan.login.Models.HotelSearch.RequestHotelSearch
 import com.tan.login.Models.Location
 import com.tan.login.R
-import com.tan.login.FormatString.CurTime
 import kotlinx.android.synthetic.main.fragment_hotel.*
 import java.time.LocalDate
 import java.util.*
@@ -128,7 +130,7 @@ class HotelFragment : Fragment() {
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
 		dialog.setCancelable(false)
 		dialog.setContentView(R.layout.noti_dialog_fragment)
-		dialog.window!!.setLayout(WindowManager.LayoutParams.MATCH_PARENT,WindowManager.LayoutParams.WRAP_CONTENT);
+		dialog.window!!.setLayout(WindowManager.LayoutParams.MATCH_PARENT,WindowManager.LayoutParams.WRAP_CONTENT)
 		val yesBtn = dialog.findViewById(R.id.btn_cancel_noti) as Button
 		yesBtn.setOnClickListener {
 			dialog.dismiss()
@@ -175,7 +177,7 @@ class HotelFragment : Fragment() {
 	}
 	// 0344850761
 
-	fun getLocation() {
+	private fun getLocation() {
 
 		if (ActivityCompat.checkSelfPermission(
 				requireContext(),
@@ -188,6 +190,8 @@ class HotelFragment : Fragment() {
 			return
 		}
 		val geocoder = Geocoder(requireContext(),Locale.getDefault())
+		requestGetLocation(geocoder)
+
 		fusedLocationClient.lastLocation.addOnCompleteListener(requireActivity()) { task ->
 			val location = task.result
 			if (location == null) {
@@ -208,6 +212,49 @@ class HotelFragment : Fragment() {
 				}
 			}
 		}
+	}
+
+	private fun requestGetLocation(geocoder: Geocoder) {
+		val mLocationRequest: LocationRequest = LocationRequest.create()
+		mLocationRequest.interval = 60000
+		mLocationRequest.fastestInterval = 5000
+		mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+		val mLocationCallback: LocationCallback = object : LocationCallback() {
+			override fun onLocationResult(locationResult: LocationResult) {
+				if (locationResult == null) {
+					return
+				}
+				for (location in locationResult.locations) {
+					if (location != null) {
+						var address: MutableList<Address>
+						try {
+							address = geocoder.getFromLocation(location.latitude, location.longitude,1)
+							var listAdd = address[0].getAddressLine(0).split(",")
+							var district = listAdd[listAdd.size-3].trim()
+							var city = listAdd[listAdd.size-2].trim()
+							tv_search_place.text = "$district, $city"
+							Log.e("Location", "Quận:  $district,  TP: $city")
+							locationTv = Location(district,66)
+							Log.e("Location2", "Quận:  ${locationTv?.regionId},  TP: ${locationTv?.name}")
+						} catch (e: Exception) {
+							Log.e("Exception Location",e.toString())
+						}
+					}
+				}
+			}
+		}
+		if (ActivityCompat.checkSelfPermission(
+				requireActivity(),
+				Manifest.permission.ACCESS_FINE_LOCATION
+			) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+				requireActivity(),
+				Manifest.permission.ACCESS_COARSE_LOCATION
+			) != PackageManager.PERMISSION_GRANTED
+		) {
+			return
+		}
+		LocationServices.getFusedLocationProviderClient(requireActivity())
+			.requestLocationUpdates(mLocationRequest, mLocationCallback, null)
 	}
 
 }

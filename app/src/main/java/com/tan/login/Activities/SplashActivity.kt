@@ -32,7 +32,6 @@ class SplashActivity : AppCompatActivity() {
 				intent.putExtra(DATA_DB_KEY,dataLoginDb)
 				intent.putExtra(DATA_API_KEY,dataLoginApi)
 			}
-			delay(1000)
 			startActivity(intent)
 			finish()
 		}
@@ -40,7 +39,9 @@ class SplashActivity : AppCompatActivity() {
 
 	private suspend fun getLatestDatalogin() {
 		dataLoginDb = userRepo.getDataloginFromDb()
-		Log.e("Splash Actity db",dataLoginDb?.refreshToken!!)
+		if (dataLoginDb!= null){
+			Log.e("Splash Actity db",dataLoginDb?.refreshToken!!)
+		}
 	}
 
 	private suspend fun getDataApi() {

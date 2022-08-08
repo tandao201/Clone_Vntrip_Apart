@@ -22,8 +22,13 @@ import com.tan.login.R
 import com.tan.login.FormatString.CurTime
 import kotlinx.android.synthetic.main.fragment_flight_booking.*
 import kotlinx.android.synthetic.main.fragment_flight_booking.view.*
+import kotlinx.android.synthetic.main.fragment_flight_booking.view.im_menu_header
+import kotlinx.android.synthetic.main.fragment_flight_booking.view.ln_check_out
+import kotlinx.android.synthetic.main.fragment_flight_booking.view.tv_check_in
+import kotlinx.android.synthetic.main.fragment_flight_booking.view.tv_check_out
 import kotlinx.android.synthetic.main.fragment_hotel.tv_check_in
 import kotlinx.android.synthetic.main.fragment_hotel.tv_check_out
+import kotlinx.android.synthetic.main.fragment_hotel.view.*
 import java.time.LocalDate
 import java.util.*
 
@@ -36,8 +41,10 @@ class FlightBookingFragment : Fragment() {
     private val REQUEST_SEARCH_TICKET = "REQUEST_TICKET"
     private val TAG = "FlightBookingFragment"
     private val SAVE_KEY_TIME = "SAVE BUNDLE TIME"
+    private val SAVE_KEY_TIME_TO = "SAVE BUNDLE TIME TO"
     private val SAVE_KEY_GO = "SAVE BUNDLE_GO"
     private val SAVE_KEY_TO = "SAVE BUNDLE_TO"
+    private val SAVE_IS_ROUND_TRIP = "SAVE ROUND TRIP"
 
     private val MINISECOND_IN_DAY: Long = 86400000
     private var MINISECOND_30_DAYS: Long = MINISECOND_IN_DAY * 30
@@ -48,7 +55,10 @@ class FlightBookingFragment : Fragment() {
     private var requestSearchFlight: RequestSearchFlight? = null
     private var placeGo = ""
     private var placeTo = ""
-    private var time = ""
+    private var timeGo = ""
+    private var timeTo = ""
+    private var regionDatum1: RegionDatum? = null
+    private var regionDatum2: RegionDatum? = null
 
     var iClickFlight = object : IClickFlight {
         override fun clickBtnYesSelectPeople(selectPeople: SelectPeople) {
@@ -65,6 +75,7 @@ class FlightBookingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_flight_booking, container, false)
+
         initTime(view)
         getDataBundle(view)
         eventClick(view)
@@ -76,9 +87,16 @@ class FlightBookingFragment : Fragment() {
         if (bundle != null) {
             if (bundle.getSerializable(REQUEST_SEARCH_TICKET)!=null){
                 requestSearchFlight = bundle.getSerializable(REQUEST_SEARCH_TICKET) as RequestSearchFlight?
-                placeGo = bundle.getString(SAVE_KEY_GO).toString()
-                placeTo = bundle.getString(SAVE_KEY_TO).toString()
-                time = bundle.getString(SAVE_KEY_TIME).toString()
+                if (bundle.getString(SAVE_KEY_GO)!=null) {
+                    placeGo = bundle.getString(SAVE_KEY_GO).toString()
+                    placeTo = bundle.getString(SAVE_KEY_TO).toString()
+                }
+                timeGo = bundle.getString(SAVE_KEY_TIME).toString()
+                if (bundle.getBoolean(SAVE_IS_ROUND_TRIP)!= null){
+                    isRoundTrip = bundle.getBoolean(SAVE_IS_ROUND_TRIP)
+                    timeTo = bundle.getString(SAVE_KEY_TIME_TO).toString()
+                }
+
                 Log.e("Booking fragment bundle",placeTo)
                 bindingView(view)
             }
@@ -86,12 +104,22 @@ class FlightBookingFragment : Fragment() {
     }
 
     private fun bindingView(view: View) {
-        view.tv_flight_code_go.text = requestSearchFlight!!.listFlight[0].startPoint
-        view.tv_flight_place_go.text = placeGo
-        view.tv_flight_code_to.text = requestSearchFlight!!.listFlight[0].endPoint
-        view.tv_flight_place_to.text = placeTo
-        view.tv_check_in.text = time
-        Log.e("Booking fragment bundle",time)
+        if (regionDatum1==null) {
+            view.tv_flight_code_go.text = requestSearchFlight!!.listFlight[0].startPoint
+            view.tv_flight_place_go.text = placeGo
+            view.tv_flight_code_to.text = requestSearchFlight!!.listFlight[0].endPoint
+            view.tv_flight_place_to.text = placeTo
+        }
+        view.tv_check_in.text = timeGo
+        if (isRoundTrip){
+            Log.e("set view" ,timeTo)
+            view.ln_check_out.visibility = View.VISIBLE
+            view.tv_check_out.text = timeTo
+            view.swich_round_trip.isChecked = isRoundTrip
+        } else {
+            view.ln_check_out.visibility = View.GONE
+        }
+        Log.e("Booking fragment bundle",timeGo)
         Log.e("Booking fragment bundle",requestSearchFlight!!.adultCount.toString())
         Log.e("Booking fragment bundle",requestSearchFlight!!.childCount.toString())
         var select = SelectPeople(requestSearchFlight!!.adultCount,requestSearchFlight!!.childCount,requestSearchFlight!!.infantCount)
@@ -120,14 +148,14 @@ class FlightBookingFragment : Fragment() {
         var bundle = this.arguments
         if (bundle != null) {
             if (bundle.getSerializable(SELECT_PLACE_1) != null) {
-                var regionDatum: RegionDatum = bundle.getSerializable(SELECT_PLACE_1) as RegionDatum
-                view.tv_flight_code_go.text = regionDatum.code
-                view.tv_flight_place_go.text = regionDatum.provinceName
+                regionDatum1 = bundle.getSerializable(SELECT_PLACE_1) as RegionDatum
+                view.tv_flight_code_go.text = regionDatum1?.code
+                view.tv_flight_place_go.text = regionDatum1?.provinceName
             }
             if (bundle.getSerializable(SELECT_PLACE_2) != null) {
-                var regionDatum: RegionDatum = bundle.getSerializable(SELECT_PLACE_2) as RegionDatum
-                view.tv_flight_code_to.text = regionDatum.code
-                view.tv_flight_place_to.text = regionDatum.provinceName
+                regionDatum2 = bundle.getSerializable(SELECT_PLACE_2) as RegionDatum
+                view.tv_flight_code_to.text = regionDatum2?.code
+                view.tv_flight_place_to.text = regionDatum2?.provinceName
             }
 
         }
@@ -184,6 +212,11 @@ class FlightBookingFragment : Fragment() {
                     bundle.putString(SAVE_KEY_GO,view.tv_flight_place_go.text?.toString())
                     bundle.putString(SAVE_KEY_TO,view.tv_flight_place_to.text?.toString())
                     bundle.putString(SAVE_KEY_TIME,view.tv_check_in.text?.toString())
+                    if (view.swich_round_trip.isChecked){
+                        isRoundTrip = view.swich_round_trip.isChecked
+                        bundle.putString(SAVE_KEY_TIME_TO,view.tv_check_out.text?.toString())
+                        bundle.putBoolean(SAVE_IS_ROUND_TRIP,view.swich_round_trip.isChecked)
+                    }
 
                     var ticketSearchedFragment = TicketSearchedFragment()
                     ticketSearchedFragment.arguments = bundle
@@ -244,6 +277,22 @@ class FlightBookingFragment : Fragment() {
                     )
                 )
             }
+            var listFlight: List<ListFlight> = getListFlightSearch(view)
+            var requestTmp  = RequestSearchFlight(
+                selectPeopleMain!!.adult,
+                selectPeopleMain!!.child,
+                selectPeopleMain!!.baby,
+                listFlight
+            )
+            bundle.putSerializable(REQUEST_SEARCH_TICKET,requestTmp)
+            bundle.putString(SAVE_KEY_GO,view.tv_flight_place_go.text?.toString())
+            bundle.putString(SAVE_KEY_TO,view.tv_flight_place_to.text?.toString())
+            bundle.putString(SAVE_KEY_TIME,view.tv_check_in.text?.toString())
+            if (view.swich_round_trip.isChecked){
+                isRoundTrip = view.swich_round_trip.isChecked
+                bundle.putString(SAVE_KEY_TIME_TO,view.tv_check_out.text?.toString())
+                bundle.putBoolean(SAVE_IS_ROUND_TRIP,view.swich_round_trip.isChecked)
+            }
 
             var searchFlightFragment = SearchFlightFragment()
 
@@ -275,6 +324,22 @@ class FlightBookingFragment : Fragment() {
                     )
                 )
                 Log.e("BookingFragment Go", view.tv_flight_code_go.text.toString())
+            }
+            var listFlight: List<ListFlight> = getListFlightSearch(view)
+            var requestTmp  = RequestSearchFlight(
+                selectPeopleMain!!.adult,
+                selectPeopleMain!!.child,
+                selectPeopleMain!!.baby,
+                listFlight
+            )
+            bundle.putSerializable(REQUEST_SEARCH_TICKET,requestTmp)
+            bundle.putString(SAVE_KEY_GO,view.tv_flight_place_go.text?.toString())
+            bundle.putString(SAVE_KEY_TO,view.tv_flight_place_to.text?.toString())
+            bundle.putString(SAVE_KEY_TIME,view.tv_check_in.text?.toString())
+            if (view.swich_round_trip.isChecked){
+                isRoundTrip = view.swich_round_trip.isChecked
+                bundle.putString(SAVE_KEY_TIME_TO,view.tv_check_out.text?.toString())
+                bundle.putBoolean(SAVE_IS_ROUND_TRIP,view.swich_round_trip.isChecked)
             }
 
             var searchFlightFragment = SearchFlightFragment()
