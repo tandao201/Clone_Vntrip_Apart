@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_weight="15"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.HotelSearchedFragment">
+
+    <RelativeLayout
+        android:padding="10dp"
+        android:layout_weight="1.5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <ImageView
+            android:id="@+id/imv_icon_back"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_back_black" />
+
+        <TextView
+            android:id="@+id/tv_place_hotel_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Q.Tây Hồ, Hà Nội"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_dateTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_place_hotel_search"
+            android:layout_centerHorizontal="true"
+            android:textSize="13sp"
+            android:text="1 đêm (03/08 - 04/08)"
+            android:textColor="@color/purple_700" />
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_phone" />
+
+    </RelativeLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:scrollbars="vertical"
+        android:id="@+id/recycler_hotel_searched"
+        android:layout_weight="13"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:weightSum="9"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <TextView
+            style="@style/tv_filter_hotel_search"
+            android:background="@drawable/border"
+            android:layout_weight="3"
+            android:text="Sắp xếp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            style="@style/tv_filter_hotel_search"
+            android:background="@drawable/border"
+            android:layout_weight="3"
+            android:text="Lọc"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            style="@style/tv_filter_hotel_search"
+            android:background="@drawable/border"
+            android:layout_weight="3"
+            android:text="Bản đồ"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

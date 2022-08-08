@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:background="@color/gray"
+        android:layout_width="match_parent"
+        android:layout_height="7dp"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:weightSum="10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:scaleType="fitXY"
+            android:id="@+id/imv_thumb"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="180dp"/>
+
+
+        <RelativeLayout
+            android:padding="10dp"
+            android:layout_weight="7"
+            android:layout_width="0dp"
+            android:layout_height="180dp">
+
+            <TextView
+                android:id="@+id/tv_hotel_name_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Khách sạn Nho 9"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <RatingBar
+                android:id="@+id/rtb_hotel_item"
+                style="@style/customRatingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_hotel_name_item"
+                android:numStars="3"
+                android:paddingTop="2dp"
+                android:progressTint="@color/custom_orange"
+                android:rating="3"
+                android:secondaryProgressTint="@android:color/transparent" />
+
+            <TextView
+                android:id="@+id/tv_hotel_address_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/rtb_hotel_item"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingTop="2dp"
+                android:text="59A ngõ 66B đường Hoàng Hoa Thám, Hà Nội, Việt Nam"
+                android:textColor="@color/gray_text"
+                android:textSize="10sp" />
+
+            <RelativeLayout
+                android:id="@+id/rela_rating_score"
+                android:paddingTop="2dp"
+                android:layout_below="@id/tv_hotel_address_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_rating_score"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="8.5"
+                    android:textColor="@color/custom_orange"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_sub_rating_score"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="1dp"
+                    android:layout_toRightOf="@id/tv_rating_score"
+                    android:text="Tuyệt vời"
+                    android:textColor="@color/custom_orange"
+                    android:textSize="9sp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rela_mobile_endow"
+                android:layout_marginTop="5dp"
+                android:layout_below="@id/rela_rating_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/ic_phone"
+                    android:layout_width="20dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/ic_phone" />
+
+                <TextView
+                    android:id="@+id/tv_mobile_endow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/ic_phone"
+                    android:layout_toRightOf="@id/ic_phone"
+                    android:text="Ưu đãi trên điện thoại"
+                    android:textColor="@color/blue"
+                    android:textSize="10sp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginRight="7dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:id="@+id/rela_price_official"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_price_official"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="900.000đ"
+                    android:textColor="@color/custom_orange"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/tv_price_official"
+                    android:layout_marginLeft="7dp"
+                    android:layout_toRightOf="@id/tv_price_official"
+                    android:text="/đêm"
+                    android:textColor="@color/gray_text"
+                    android:textSize="16sp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginRight="7dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="25dp"
+                android:layout_alignBottom="@id/rela_price_official"
+                android:id="@+id/rela_price_sale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_price_sale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/strike_through_text"
+                    android:text="2.440.000đ"
+                    android:textColor="@color/gray_text"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_price_sale_per"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:textSize="12sp"
+                    android:layout_toRightOf="@id/tv_price_sale"
+                    android:background="@drawable/background_orange"
+                    android:text="-45%"
+                    android:textColor="@color/white" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="300dp">
+
+    <TextView
+        android:padding="5dp"
+        android:background="@color/custom_yello"
+        android:gravity="center"
+        android:text="Thông báo"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:layout_weight="3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+
+    <TextView
+        android:text="Không thể chọn quá 30 ngày"
+        android:gravity="center"
+        android:layout_weight="6"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:padding="10dp"
+        android:id="@+id/btn_cancel_noti"
+        android:gravity="center"
+        android:text="Đóng"
+        android:textColor="@color/custom_orange"
+        app:strokeColor="@color/custom_orange"
+        app:strokeWidth="2dp"
+        android:backgroundTint="@color/white"
+        android:layout_weight="2"
+        android:layout_marginBottom="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"/>
+
+</LinearLayout>
