@@ -25,6 +25,11 @@ import com.tan.login.Models.HotelSearch.RequestHotelSearch
 import com.tan.login.Models.Location
 import com.tan.login.R
 import kotlinx.android.synthetic.main.fragment_hotel.*
+import kotlinx.android.synthetic.main.fragment_hotel.view.*
+import kotlinx.android.synthetic.main.fragment_hotel_searched.view.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.time.LocalDate
 import java.util.*
 
@@ -35,9 +40,13 @@ class HotelFragment : Fragment() {
 		private const val PERMISSION_REQUEST_ACCESS_FINE_LOCATION = 100
 		private const val MINISECOND_IN_DAY: Long = 86400000
 		private var MINISECOND_30_DAYS: Long = MINISECOND_IN_DAY * 30
+		private val TAG = "HotelFragment"
 	}
 
+	var requestHotelSearchEventBus : RequestHotelSearch? = null
+
 	private var locationTv: Location? = null
+	private var locationEventBus: Location? = null
 
 	private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -46,6 +55,7 @@ class HotelFragment : Fragment() {
 		savedInstanceState: Bundle?
 	): View? {
 		fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+		EventBus.getDefault().register(this)
 		return inflater.inflate(R.layout.fragment_hotel, container, false)
 	}
 
@@ -55,6 +65,15 @@ class HotelFragment : Fragment() {
 		super.onViewCreated(view, savedInstanceState)
 		init()
 		eventClick()
+		getLocationEvenBus(view)
+	}
+
+	private fun getLocationEvenBus(view: View) {
+		if (requestHotelSearchEventBus!=null){
+			view.tv_search_place.text = requestHotelSearchEventBus?.province_name
+			view.tv_check_in.text = requestHotelSearchEventBus?.checkInDateFull
+			view.tv_check_out.text = requestHotelSearchEventBus?.checkOutDateFull
+		}
 	}
 
 	@RequiresApi(Build.VERSION_CODES.O)
@@ -72,7 +91,7 @@ class HotelFragment : Fragment() {
 				tv_check_out.text = bundle.getString("checkOut")
 			}
 			Log.e("Location HotelFragment",locationTv?.regionId.toString())
-			tv_search_place.text = locationTv?.name
+//			tv_search_place.text = locationTv?.name
 		} else {
 			getLocation()
 		}
@@ -87,7 +106,14 @@ class HotelFragment : Fragment() {
 		}
 
 		ln_search_place.setOnClickListener {
-			var searchFragment: SearchPlaceFragment = SearchPlaceFragment()
+			val days = CurTime.dateRange(tv_check_in.text.toString(),tv_check_out.text.toString())
+			val checkInDate: String = CurTime.formatCheckInDate(tv_check_in.text.toString())
+			val bundle = Bundle()
+			val request = RequestHotelSearch("app_android",locationTv?.regionId!!,days,1,
+				checkInDate,tv_check_in.text.toString(),tv_check_out.text.toString(),tv_search_place.text.toString())
+			bundle.putSerializable("REQUEST_SEARCH",request)
+			val searchFragment: SearchPlaceFragment = SearchPlaceFragment()
+			searchFragment.arguments = bundle
 			requireActivity().supportFragmentManager.beginTransaction()
 				.setCustomAnimations(R.anim.slide_up, R.anim.slide_up_out)
 				.replace(R.id.root_container,searchFragment)
@@ -257,6 +283,20 @@ class HotelFragment : Fragment() {
 		}
 		LocationServices.getFusedLocationProviderClient(requireActivity())
 			.requestLocationUpdates(mLocationRequest, mLocationCallback, null)
+	}
+
+	override fun onDestroy() {
+		super.onDestroy()
+		EventBus.getDefault().unregister(this)
+	}
+
+	@Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+	fun onReceiveLocationEventBus(request: RequestHotelSearch?){
+		val stick = EventBus.getDefault().removeStickyEvent(Location::javaClass)
+		if (request != null){
+			requestHotelSearchEventBus = request
+			Log.e(TAG, "onReceiveLocationEventBus: EventBus listener...")
+		}
 	}
 
 }

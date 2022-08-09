@@ -17,6 +17,7 @@ import com.tan.login.Adapters.LocationAdapter
 import com.tan.login.Adapters.SearchLocationAdapter
 import com.tan.login.DB.LocationDB
 import com.tan.login.Interfaces.IClickLocation
+import com.tan.login.Models.HotelSearch.RequestHotelSearch
 import com.tan.login.Models.Login.ResponseLogin
 import com.tan.login.Models.Suggest.DataSuggest
 import com.tan.login.Models.Suggest.Hotel
@@ -28,6 +29,7 @@ import kotlinx.android.synthetic.main.fragment_hotel.view.*
 import kotlinx.android.synthetic.main.fragment_search_place.*
 import kotlinx.android.synthetic.main.fragment_search_place.view.*
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -38,6 +40,8 @@ class SearchPlaceFragment : Fragment() {
         private var data: MutableSet<Location> = hashSetOf()
         var dataSearch = mutableListOf<Any>()
     }
+
+    var requestHotelSearch : RequestHotelSearch? = null
 
     lateinit var locationRepo: LocationRepo
     var suggestRepo = SuggestRepo()
@@ -81,6 +85,7 @@ class SearchPlaceFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_search_place, container, false)
         eventListener(view)
         setUpToRecycler(view)
+        getDataBundle()
         return view
     }
 
@@ -96,6 +101,13 @@ class SearchPlaceFragment : Fragment() {
         }
         view?.recycler_recent?.adapter = locationAdapter
         view?.recycler_recent?.layoutManager = LinearLayoutManager(context)
+    }
+
+    private fun getDataBundle() {
+        var bundle = this.arguments
+        if ( bundle != null ){
+            requestHotelSearch = bundle.getSerializable("REQUEST_SEARCH") as RequestHotelSearch?
+        }
     }
 
     private fun eventListener(view: View) {
@@ -196,6 +208,9 @@ class SearchPlaceFragment : Fragment() {
         sv_place.clearFocus()
         var bundle = Bundle()
         bundle.putSerializable("CITY",location)
+        requestHotelSearch?.province_id = location.regionId
+        requestHotelSearch?.province_name = location.name
+        EventBus.getDefault().postSticky(requestHotelSearch)
         data.add(location)
         lifecycleScope.launch {
             locationRepo.addNewLocation(location)
