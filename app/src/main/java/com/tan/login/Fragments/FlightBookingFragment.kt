@@ -117,6 +117,7 @@ class FlightBookingFragment : Fragment() {
             view.tv_check_out.text = timeTo
             view.swich_round_trip.isChecked = isRoundTrip
         } else {
+            view.swich_round_trip.isChecked = isRoundTrip
             view.ln_check_out.visibility = View.GONE
         }
         Log.e("Booking fragment bundle",timeGo)
