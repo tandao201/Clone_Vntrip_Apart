@@ -14,15 +14,36 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import com.tan.login.R
-import kotlinx.android.synthetic.main.menu_dialog.*
 import kotlinx.android.synthetic.main.menu_dialog.view.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 
 class MenuDialog: DialogFragment() {
 
     private val STOREAGE_PERMISSION_CODE = 100
     private val TAG = "MenuDialog"
+
+    private var itemClickedInside : String? = null
+
+    @Subscribe(sticky = true,threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(itemClicked: String?) {
+        Log.e(TAG, "onMessageEvent: event...")
+        val stick = EventBus.getDefault().removeStickyEvent(String.javaClass)
+
+        if (itemClicked != null) {
+            Log.e(TAG, "onMessageEvent: ${itemClicked!!}")
+            itemClickedInside = itemClicked
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
+    }
 
     override fun onStart() {
         super.onStart()
@@ -41,6 +62,7 @@ class MenuDialog: DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        EventBus.getDefault().register(this)
         var view = inflater.inflate(R.layout.menu_dialog,container,false)
         dialog!!.window!!.requestFeature(Window.FEATURE_NO_TITLE)
         view.btn_requestPermission.setOnClickListener {
@@ -53,6 +75,11 @@ class MenuDialog: DialogFragment() {
 
         view.btn_back_to_home.setOnClickListener {
             dialog!!.dismiss()
+        }
+
+        if (itemClickedInside!= null){
+            Log.e(TAG, "onCreateView: binding...")
+            view.tv_show_clicked.text = itemClickedInside
         }
         return view
     }
@@ -131,4 +158,6 @@ class MenuDialog: DialogFragment() {
     private fun makeToast(msg: String){
         Toast.makeText(requireActivity(),msg, Toast.LENGTH_SHORT).show()
     }
+
+
 }

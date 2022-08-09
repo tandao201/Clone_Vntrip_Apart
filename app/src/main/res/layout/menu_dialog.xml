@@ -25,6 +25,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/rela_check_permission"
         android:layout_marginTop="50dp"
         android:layout_below="@id/rela_toolbar"
         android:layout_width="wrap_content"
@@ -53,6 +54,16 @@
             android:layout_height="wrap_content"/>
 
     </RelativeLayout>
+
+    <TextView
+        android:layout_marginLeft="20dp"
+        android:textSize="20sp"
+        android:layout_marginTop="20dp"
+        android:id="@+id/tv_show_clicked"
+        android:layout_below="@id/rela_check_permission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Kiểm tra yêu cầu " />
 
     <androidx.appcompat.widget.AppCompatButton
         android:layout_alignParentBottom="true"

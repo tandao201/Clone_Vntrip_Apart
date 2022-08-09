@@ -162,8 +162,6 @@ class HotelFragment : Fragment() {
 
 		}
 
-		datePicker
-
 		// Setting up the event for when cancelled is clicked
 		datePicker.addOnNegativeButtonClickListener {
 			Toast.makeText(requireContext(), "${datePicker.headerText} is cancelled", Toast.LENGTH_LONG).show()
@@ -199,10 +197,14 @@ class HotelFragment : Fragment() {
 				var address: MutableList<Address>
 				try {
 					address = geocoder.getFromLocation(location.latitude, location.longitude,1)
+
 					var listAdd = address[0].getAddressLine(0).split(",")
 					var district = listAdd[listAdd.size-3].trim()
 					var city = listAdd[listAdd.size-2].trim()
-					tv_search_place.text = "$district, $city"
+					var province = ""
+					if (address[0].getAddressLine(0).contains("Quận"))	province = "Q."
+					else 	province = "H."
+					tv_search_place.text = "${province}$district, $city"
 					Log.e("Location", "Quận:  $district,  TP: $city")
 					locationTv = Location(district,66)
 					Log.e("Location2", "Quận:  ${locationTv?.regionId},  TP: ${locationTv?.name}")
@@ -228,6 +230,7 @@ class HotelFragment : Fragment() {
 						var address: MutableList<Address>
 						try {
 							address = geocoder.getFromLocation(location.latitude, location.longitude,1)
+							Log.e("Location full: ",address[0].getAddressLine(0))
 							var listAdd = address[0].getAddressLine(0).split(",")
 							var district = listAdd[listAdd.size-3].trim()
 							var city = listAdd[listAdd.size-2].trim()
