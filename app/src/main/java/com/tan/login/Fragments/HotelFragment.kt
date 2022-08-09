@@ -64,7 +64,6 @@ class HotelFragment : Fragment() {
 		var curDate = LocalDate.now()
 		tv_check_in.text = CurTime.getDateTime(curDay,curDate)
 		tv_check_out.text = CurTime.getDateTime(LocalDate.now().plusDays(1).dayOfWeek.name,curDate.plusDays(1))
-		getLocation()
 		var bundle = this.arguments
 		if (bundle != null) {
 			locationTv = bundle.getSerializable("CITY") as Location
@@ -190,7 +189,7 @@ class HotelFragment : Fragment() {
 			return
 		}
 		val geocoder = Geocoder(requireContext(),Locale.getDefault())
-		requestGetLocation(geocoder)
+//		requestGetLocation(geocoder)
 
 		fusedLocationClient.lastLocation.addOnCompleteListener(requireActivity()) { task ->
 			val location = task.result
