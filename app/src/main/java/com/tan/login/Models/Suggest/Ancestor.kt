@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 class Ancestor {
     @SerializedName("id")
     @Expose
-    var id: Int? = null
+    var id: String? = null
 
     @SerializedName("type")
     @Expose

@@ -120,6 +120,7 @@ class SearchPlaceFragment : Fragment() {
 
         view.tv_cancel.setOnClickListener {
             sv_place.clearFocus()
+            EventBus.getDefault().postSticky(requestHotelSearch)
             var hotelFragment = HotelFragment()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.root_container,hotelFragment).commit()

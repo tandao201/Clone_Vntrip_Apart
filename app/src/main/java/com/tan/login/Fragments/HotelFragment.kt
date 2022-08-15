@@ -64,7 +64,7 @@ class HotelFragment : Fragment() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		init()
-		eventClick()
+		eventClick(view)
 		getLocationEvenBus(view)
 	}
 
@@ -97,7 +97,7 @@ class HotelFragment : Fragment() {
 		}
 	}
 
-	private fun eventClick() {
+	private fun eventClick(view: View) {
 		im_menu_header?.setOnClickListener {
 			var homeFragment: HomeFragment = HomeFragment()
 			requireActivity().supportFragmentManager.beginTransaction()
@@ -105,19 +105,20 @@ class HotelFragment : Fragment() {
 				.replace(R.id.root_container,homeFragment).commit()
 		}
 
-		ln_search_place.setOnClickListener {
-			val days = CurTime.dateRange(tv_check_in.text.toString(),tv_check_out.text.toString())
-			val checkInDate: String = CurTime.formatCheckInDate(tv_check_in.text.toString())
-			val bundle = Bundle()
-			val request = RequestHotelSearch("app_android",locationTv?.regionId!!,days,1,
-				checkInDate,tv_check_in.text.toString(),tv_check_out.text.toString(),tv_search_place.text.toString())
-			bundle.putSerializable("REQUEST_SEARCH",request)
-			val searchFragment: SearchPlaceFragment = SearchPlaceFragment()
-			searchFragment.arguments = bundle
-			requireActivity().supportFragmentManager.beginTransaction()
-				.setCustomAnimations(R.anim.slide_up, R.anim.slide_up_out)
-				.replace(R.id.root_container,searchFragment)
-				.addToBackStack(null).commit()
+		view.ln_search_place.setOnClickListener {
+				val days = CurTime.dateRange(tv_check_in.text.toString(),tv_check_out.text.toString())
+				val checkInDate: String = CurTime.formatCheckInDate(tv_check_in.text.toString())
+				val bundle = Bundle()
+				val request = RequestHotelSearch("app_android",locationTv?.regionId!!,days,1,
+					checkInDate,tv_check_in.text.toString(),tv_check_out.text.toString(),tv_search_place.text.toString())
+				bundle.putSerializable("REQUEST_SEARCH",request)
+				val searchFragment: SearchPlaceFragment = SearchPlaceFragment()
+				searchFragment.arguments = bundle
+				requireActivity().supportFragmentManager.beginTransaction()
+					.setCustomAnimations(R.anim.slide_up, R.anim.slide_up_out)
+					.replace(R.id.root_container,searchFragment)
+					.addToBackStack(null).commit()
+
 		}
 
 		ln_check_in.setOnClickListener {
@@ -218,6 +219,7 @@ class HotelFragment : Fragment() {
 		fusedLocationClient.lastLocation.addOnCompleteListener(requireActivity()) { task ->
 			val location = task.result
 			if (location == null) {
+				locationTv = Location("Hà nội", 66)
 				Toast.makeText(requireContext(),"Error!",Toast.LENGTH_SHORT).show()
 			} else {
 				var address: MutableList<Address>
